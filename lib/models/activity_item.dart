@@ -31,5 +31,14 @@ class ActivityItem {
           route: '/activity1',
           category: 'UI & State',
         ),
+        ActivityItem(
+          id: 'act2',
+          title: 'Activity 2',
+          subtitle: 'Network Monitor',
+          description: 'Real-time network stream listener, request queuing system, and graceful offline recovery.',
+          icon: Icons.wifi_tethering_rounded,
+          route: '/activity2',
+          category: 'Networking',
+        ),
       ];
 }
