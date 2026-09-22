@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/counter_provider.dart';
+import 'providers/network_diagnostic_provider.dart';
 import 'providers/theme_provider.dart';
 import 'screens/activity1_screen.dart';
 import 'screens/activity2_screen.dart';
@@ -22,6 +23,7 @@ class ActivityApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => CounterProvider()),
+        ChangeNotifierProvider(create: (_) => NetworkDiagnosticProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {

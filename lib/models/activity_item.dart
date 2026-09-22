@@ -40,5 +40,14 @@ class ActivityItem {
           route: '/activity2',
           category: 'Networking',
         ),
+        ActivityItem(
+          id: 'act3',
+          title: 'Activity 3',
+          subtitle: 'Dynamic Performance Throttle App',
+          description: 'Network diagnostic dashboard testing ping & bandwidth to dynamically throttle multimedia UI.',
+          icon: Icons.speed_rounded,
+          route: '/activity3',
+          category: 'Performance & Network',
+        ),
       ];
 }

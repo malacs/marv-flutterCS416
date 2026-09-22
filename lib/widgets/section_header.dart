@@ -24,17 +24,16 @@ class SectionHeader extends StatelessWidget {
           Icon(icon, color: theme.colorScheme.primary, size: 22),
           const SizedBox(width: 8),
           // Text
-          Text(
-            title,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
+          Expanded(
+            child: Text(
+              title,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
             ),
           ),
-          if (trailing != null) ...[
-            const Spacer(),
-            trailing!,
-          ],
+          if (trailing != null) trailing!,
         ],
       ),
     );

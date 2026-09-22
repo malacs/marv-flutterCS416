@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/activity_item.dart';
+import '../providers/network_diagnostic_provider.dart';
 import '../providers/theme_provider.dart';
 import '../widgets/activity_card.dart';
 import '../widgets/portfolio_header.dart';
@@ -41,6 +42,64 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.transparent,
         scrolledUnderElevation: 1,
         actions: [
+          // Global Network Health Badge
+          Consumer<NetworkDiagnosticProvider>(
+            builder: (context, netProvider, child) {
+              final tier = netProvider.activeTier;
+              final Color color;
+              switch (tier) {
+                case NetworkHealthTier.excellent:
+                  color = const Color(0xFF10B981);
+                  break;
+                case NetworkHealthTier.fair:
+                  color = Colors.amber.shade800;
+                  break;
+                case NetworkHealthTier.poor:
+                  color = Colors.orange.shade800;
+                  break;
+                case NetworkHealthTier.degraded:
+                  color = Colors.red.shade700;
+                  break;
+              }
+
+              return Padding(
+                padding: const EdgeInsets.only(right: 6.0),
+                child: Tooltip(
+                  message:
+                      'Network Health: ${netProvider.tierName} (${netProvider.downloadMbps.toStringAsFixed(1)} Mbps). Tap to open Diagnostics.',
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () => Navigator.pushNamed(context, '/activity3'),
+                    child: Container(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: color.withAlpha(25),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: color.withAlpha(120)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.wifi_rounded, size: 14, color: color),
+                          const SizedBox(width: 4),
+                          Text(
+                            netProvider.tierName,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: color,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+
           // Theme Toggle
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
@@ -160,7 +219,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildActivityCompilationView(BuildContext context, List<ActivityItem> activities) {
+  Widget _buildActivityCompilationView(
+      BuildContext context, List<ActivityItem> activities) {
     final theme = Theme.of(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),

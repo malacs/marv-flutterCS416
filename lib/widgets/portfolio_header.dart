@@ -65,11 +65,13 @@ class PortfolioHeader extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             // Text
-            Text(
-              'Compilation of Activity:',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurface,
+            Expanded(
+              child: Text(
+                'Compilation of Activity:',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
             ),
           ],

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/network_diagnostic_provider.dart';
 import '../widgets/section_header.dart';
 
 // Queued Request Model
@@ -272,6 +274,18 @@ class _Activity2ScreenState extends State<Activity2Screen> {
                                   ? theme.colorScheme.onSurface
                                   : theme.colorScheme.error,
                             ),
+                          ),
+                          const SizedBox(height: 6),
+                          Consumer<NetworkDiagnosticProvider>(
+                            builder: (context, netProvider, child) {
+                              return Text(
+                                'Global Health Tier: ${netProvider.tierName} (${netProvider.downloadMbps.toStringAsFixed(1)} Mbps)',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),

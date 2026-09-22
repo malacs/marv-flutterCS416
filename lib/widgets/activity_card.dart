@@ -60,18 +60,22 @@ class ActivityCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
                   // Category Badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer.withAlpha(100),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      item.category,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 11,
+                  Flexible(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primaryContainer.withAlpha(100),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        item.category,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 11,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                   ),
