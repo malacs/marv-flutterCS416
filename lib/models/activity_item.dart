@@ -49,5 +49,14 @@ class ActivityItem {
           route: '/activity3',
           category: 'Performance & Network',
         ),
+        ActivityItem(
+          id: 'act4',
+          title: 'Activity 4',
+          subtitle: 'Serverless Local Chat App',
+          description: 'Peer-to-peer localized mesh chat app utilizing Google Nearby Connections without internet or central servers.',
+          icon: Icons.hub_rounded,
+          route: '/activity4',
+          category: 'Mesh & P2P',
+        ),
       ];
 }

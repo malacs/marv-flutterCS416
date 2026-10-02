@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/counter_provider.dart';
+import 'providers/local_mesh_provider.dart';
 import 'providers/network_diagnostic_provider.dart';
 import 'providers/theme_provider.dart';
 import 'screens/activity1_screen.dart';
 import 'screens/activity2_screen.dart';
 import 'screens/activity3_screen.dart';
+import 'screens/activity4_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/settings_screen.dart';
 
@@ -24,6 +26,7 @@ class ActivityApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => CounterProvider()),
         ChangeNotifierProvider(create: (_) => NetworkDiagnosticProvider()),
+        ChangeNotifierProvider(create: (_) => LocalMeshProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -69,6 +72,7 @@ class ActivityApp extends StatelessWidget {
               '/activity1': (context) => const Activity1Screen(),
               '/activity2': (context) => const Activity2Screen(),
               '/activity3': (context) => const Activity3Screen(),
+              '/activity4': (context) => const Activity4Screen(),
               '/settings': (context) => const SettingsScreen(),
             },
           );
