@@ -15,7 +15,7 @@ dependencies:
   http: ^1.2.0
   cupertino_icons: ^1.0.8
   nearby_connections: ^4.3.0
-  permission_handler: ^13.0.2
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:
