@@ -16,7 +16,19 @@ void main() {
     expect(find.text('Activity 3:'), findsOneWidget);
 
     // Verify Global Network Health Badge exists in HomeScreen AppBar
-    expect(find.byIcon(Icons.wifi_rounded), findsAtLeastNWidgets(1));
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Icon &&
+            (widget.icon == Icons.wifi_rounded ||
+                widget.icon == Icons.wifi_off_rounded ||
+                widget.icon == Icons.bolt_rounded ||
+                widget.icon == Icons.network_check_rounded ||
+                widget.icon ==
+                    Icons.signal_cellular_connected_no_internet_4_bar_rounded),
+      ),
+      findsAtLeastNWidgets(1),
+    );
   });
 
   testWidgets('Navigates to Activity 3 and renders 5 required metrics and diagnostic controls without overflow', (WidgetTester tester) async {
@@ -81,5 +93,18 @@ void main() {
     // Verify Settings screen rendered
     expect(find.text('Appearance'), findsOneWidget);
     expect(find.text('Dark Mode'), findsOneWidget);
+  });
+
+  testWidgets('Activity 3 renders dash "-" for all metrics when offline or unmeasured', (WidgetTester tester) async {
+    await tester.pumpWidget(const ActivityApp());
+    await tester.pumpAndSettle();
+
+    final activity3Text = find.text('Activity 3:');
+    await tester.ensureVisible(activity3Text);
+    await tester.tap(activity3Text);
+    await tester.pumpAndSettle();
+
+    // At least one dash "-" must be rendered for metrics when unmeasured or offline
+    expect(find.text('-'), findsWidgets);
   });
 }

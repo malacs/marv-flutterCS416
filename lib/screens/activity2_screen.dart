@@ -278,8 +278,13 @@ class _Activity2ScreenState extends State<Activity2Screen> {
                           const SizedBox(height: 6),
                           Consumer<NetworkDiagnosticProvider>(
                             builder: (context, netProvider, child) {
+                              final speedStr = (netProvider.isOffline ||
+                                      !netProvider.hasMeasured ||
+                                      netProvider.downloadMbps <= 0)
+                                  ? '-'
+                                  : '${netProvider.downloadMbps.toStringAsFixed(1)} Mbps';
                               return Text(
-                                'Global Health Tier: ${netProvider.tierName} (${netProvider.downloadMbps.toStringAsFixed(1)} Mbps)',
+                                'Global Health Tier: ${netProvider.tierName} ($speedStr)',
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
                                   fontWeight: FontWeight.w600,

@@ -11,7 +11,6 @@ class Activity3Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final diagnosticProvider = Provider.of<NetworkDiagnosticProvider>(context);
-    final activeTier = diagnosticProvider.activeTier;
 
     return Scaffold(
       appBar: AppBar(
@@ -64,7 +63,7 @@ class Activity3Screen extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Measure the connection in three ordered phases and adapt content to the result.',
+                              'Measure connection quality across 3 ordered phases with real-time adaptation for Wi-Fi and Mobile Data.',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
@@ -103,7 +102,7 @@ class Activity3Screen extends StatelessWidget {
                 title: 'Dynamic Content (${diagnosticProvider.tierName} Mode)',
                 icon: Icons.perm_media_outlined,
               ),
-              _buildDynamicContentSection(context, activeTier),
+              _buildDynamicContentSection(context, diagnosticProvider),
               const SizedBox(height: 24),
             ],
           ),
@@ -112,32 +111,38 @@ class Activity3Screen extends StatelessWidget {
     );
   }
 
-  /// Banner displaying current network health tier
+  /// Banner displaying current network health tier or offline status
   Widget _buildActiveTierBanner(
       BuildContext context, NetworkDiagnosticProvider provider) {
     final theme = Theme.of(context);
+    final isOffline = provider.isOffline;
     final tier = provider.activeTier;
 
     final Color color;
     final IconData icon;
 
-    switch (tier) {
-      case NetworkHealthTier.excellent:
-        color = const Color(0xFF10B981);
-        icon = Icons.bolt_rounded;
-        break;
-      case NetworkHealthTier.fair:
-        color = Colors.amber.shade800;
-        icon = Icons.wifi_rounded;
-        break;
-      case NetworkHealthTier.poor:
-        color = Colors.orange.shade800;
-        icon = Icons.network_check_rounded;
-        break;
-      case NetworkHealthTier.degraded:
-        color = Colors.red.shade700;
-        icon = Icons.signal_cellular_connected_no_internet_4_bar_rounded;
-        break;
+    if (isOffline) {
+      color = Colors.red.shade700;
+      icon = Icons.wifi_off_rounded;
+    } else {
+      switch (tier) {
+        case NetworkHealthTier.excellent:
+          color = const Color(0xFF10B981);
+          icon = Icons.bolt_rounded;
+          break;
+        case NetworkHealthTier.fair:
+          color = Colors.amber.shade800;
+          icon = Icons.wifi_rounded;
+          break;
+        case NetworkHealthTier.poor:
+          color = Colors.orange.shade800;
+          icon = Icons.network_check_rounded;
+          break;
+        case NetworkHealthTier.degraded:
+          color = Colors.red.shade700;
+          icon = Icons.signal_cellular_connected_no_internet_4_bar_rounded;
+          break;
+      }
     }
 
     return Container(
@@ -184,21 +189,26 @@ class Activity3Screen extends StatelessWidget {
     );
   }
 
-  /// Clean Card displaying the 5 required network metrics
+  /// Clean Card displaying the 5 required network metrics, showing '-' when offline
   Widget _buildMetricsListCard(
       BuildContext context, NetworkDiagnosticProvider provider) {
     final theme = Theme.of(context);
+    final showDash = provider.isOffline || !provider.hasMeasured;
 
-    final idlePingStr = provider.idlePingMs < 0
-        ? 'Offline'
+    final idlePingStr = showDash || provider.idlePingMs <= 0
+        ? '-'
         : '${provider.idlePingMs.toStringAsFixed(1)} ms';
-    final downloadSpeedStr = '${provider.downloadMbps.toStringAsFixed(2)} Mbps';
-    final downloadPingStr = provider.downloadPingMs < 0
-        ? 'Offline'
+    final downloadSpeedStr = showDash || provider.downloadMbps <= 0
+        ? '-'
+        : '${provider.downloadMbps.toStringAsFixed(2)} Mbps';
+    final downloadPingStr = showDash || provider.downloadPingMs <= 0
+        ? '-'
         : '${provider.downloadPingMs.toStringAsFixed(1)} ms';
-    final uploadSpeedStr = '${provider.uploadMbps.toStringAsFixed(2)} Mbps';
-    final uploadPingStr = provider.uploadPingMs < 0
-        ? 'Offline'
+    final uploadSpeedStr = showDash || provider.uploadMbps <= 0
+        ? '-'
+        : '${provider.uploadMbps.toStringAsFixed(2)} Mbps';
+    final uploadPingStr = showDash || provider.uploadPingMs <= 0
+        ? '-'
         : '${provider.uploadPingMs.toStringAsFixed(1)} ms';
 
     return Card(
@@ -459,8 +469,37 @@ class Activity3Screen extends StatelessWidget {
 
   /// Dynamic Content representation that adapts strictly to detected tier without layout overflow
   Widget _buildDynamicContentSection(
-      BuildContext context, NetworkHealthTier tier) {
+      BuildContext context, NetworkDiagnosticProvider provider) {
     final theme = Theme.of(context);
+    final isOffline = provider.isOffline;
+    final tier = provider.activeTier;
+
+    final IconData icon;
+    final String title;
+
+    if (isOffline) {
+      icon = Icons.wifi_off_rounded;
+      title = 'Offline Fallback Mode';
+    } else {
+      switch (tier) {
+        case NetworkHealthTier.excellent:
+          icon = Icons.star_rounded;
+          title = 'Richer High-Quality Content Mode';
+          break;
+        case NetworkHealthTier.fair:
+          icon = Icons.tune_rounded;
+          title = 'Standard Reduced Content Mode';
+          break;
+        case NetworkHealthTier.poor:
+          icon = Icons.description_outlined;
+          title = 'Lightweight Placeholders Mode';
+          break;
+        case NetworkHealthTier.degraded:
+          icon = Icons.warning_amber_rounded;
+          title = 'Minimal Text-Focused Fallback';
+          break;
+      }
+    }
 
     return Card(
       elevation: 0,
@@ -478,19 +517,13 @@ class Activity3Screen extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  tier == NetworkHealthTier.excellent
-                      ? Icons.star_rounded
-                      : tier == NetworkHealthTier.fair
-                          ? Icons.tune_rounded
-                          : tier == NetworkHealthTier.poor
-                              ? Icons.description_outlined
-                              : Icons.warning_amber_rounded,
-                  color: theme.colorScheme.primary,
+                  icon,
+                  color: isOffline ? Colors.red : theme.colorScheme.primary,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    _getContentTitle(tier),
+                    title,
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -500,29 +533,57 @@ class Activity3Screen extends StatelessWidget {
             ),
             const Divider(height: 20),
 
-            _buildDynamicContentBody(context, tier),
+            _buildDynamicContentBody(context, provider),
           ],
         ),
       ),
     );
   }
 
-  String _getContentTitle(NetworkHealthTier tier) {
-    switch (tier) {
-      case NetworkHealthTier.excellent:
-        return 'Richer High-Quality Content Mode';
-      case NetworkHealthTier.fair:
-        return 'Standard Reduced Content Mode';
-      case NetworkHealthTier.poor:
-        return 'Lightweight Placeholders Mode';
-      case NetworkHealthTier.degraded:
-        return 'Minimal Text-Focused Fallback';
-    }
-  }
-
   Widget _buildDynamicContentBody(
-      BuildContext context, NetworkHealthTier tier) {
+      BuildContext context, NetworkDiagnosticProvider provider) {
     final theme = Theme.of(context);
+    final isOffline = provider.isOffline;
+    final tier = provider.activeTier;
+
+    if (isOffline) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: Colors.red.withAlpha(15),
+          border: Border.all(color: Colors.red.withAlpha(80)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.wifi_off_rounded, size: 32, color: Colors.red),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Offline Fallback Active',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: Colors.red.shade800,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'No internet connection detected. Network-dependent operations paused. Reconnect Wi-Fi or Mobile Data to resume.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     switch (tier) {
       case NetworkHealthTier.excellent:

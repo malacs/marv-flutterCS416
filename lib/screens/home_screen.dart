@@ -45,28 +45,45 @@ class _HomeScreenState extends State<HomeScreen> {
           // Global Network Health Badge
           Consumer<NetworkDiagnosticProvider>(
             builder: (context, netProvider, child) {
+              final isOffline = netProvider.isOffline;
               final tier = netProvider.activeTier;
               final Color color;
-              switch (tier) {
-                case NetworkHealthTier.excellent:
-                  color = const Color(0xFF10B981);
-                  break;
-                case NetworkHealthTier.fair:
-                  color = Colors.amber.shade800;
-                  break;
-                case NetworkHealthTier.poor:
-                  color = Colors.orange.shade800;
-                  break;
-                case NetworkHealthTier.degraded:
-                  color = Colors.red.shade700;
-                  break;
+              final IconData icon;
+
+              if (isOffline) {
+                color = Colors.red.shade700;
+                icon = Icons.wifi_off_rounded;
+              } else {
+                switch (tier) {
+                  case NetworkHealthTier.excellent:
+                    color = const Color(0xFF10B981);
+                    icon = Icons.bolt_rounded;
+                    break;
+                  case NetworkHealthTier.fair:
+                    color = Colors.amber.shade800;
+                    icon = Icons.wifi_rounded;
+                    break;
+                  case NetworkHealthTier.poor:
+                    color = Colors.orange.shade800;
+                    icon = Icons.network_check_rounded;
+                    break;
+                  case NetworkHealthTier.degraded:
+                    color = Colors.red.shade700;
+                    icon = Icons.signal_cellular_connected_no_internet_4_bar_rounded;
+                    break;
+                }
               }
+
+              final speedText = (isOffline || !netProvider.hasMeasured || netProvider.downloadMbps <= 0)
+                  ? '-'
+                  : '${netProvider.downloadMbps.toStringAsFixed(1)} Mbps';
 
               return Padding(
                 padding: const EdgeInsets.only(right: 6.0),
                 child: Tooltip(
-                  message:
-                      'Network Health: ${netProvider.tierName} (${netProvider.downloadMbps.toStringAsFixed(1)} Mbps). Tap to open Diagnostics.',
+                  message: isOffline
+                      ? 'Network Health: Offline. Tap to open Diagnostics.'
+                      : 'Network Health: ${netProvider.tierName} ($speedText). Tap to open Diagnostics.',
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: () => Navigator.pushNamed(context, '/activity3'),
@@ -81,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.wifi_rounded, size: 14, color: color),
+                          Icon(icon, size: 14, color: color),
                           const SizedBox(width: 4),
                           Text(
                             netProvider.tierName,
