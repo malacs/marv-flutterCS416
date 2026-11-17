@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "Activity 5 React Native",
+    "slug": "lab-companion",
+    "scheme": "labcompanion",
+    "version": "1.0.0",
+    "orientation": "default",
+    "userInterfaceStyle": "automatic",
+    "web": { "bundler": "metro" }
+  }
+}
